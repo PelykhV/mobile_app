@@ -10,93 +10,93 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   int _counter = 0;
-  TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller = TextEditingController();
+  late AnimationController _animationController;
+  late Animation<Color?> _colorAnimation;
 
-  // Функція для оновлення значення лічильника
-  void _updateCounter() {
-    String inputText = _controller.text;
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+    _colorAnimation = ColorTween(begin: Colors.white, end: Colors.redAccent)
+        .animate(_animationController);
+  }
 
-    if (inputText == "Avada Kedavra") {
-      setState(() {
-        _counter = 0; // Скидаємо інкремент до 0
+  void _onSubmit(String value) {
+    if (value == 'Avada Kedavra') {
+      _animationController.forward().then((_) {
+        setState(() => _counter = 0);
+        _animationController.reverse();
       });
     } else {
-      try {
-        // Перевірка, чи може текст бути перетворений на число
-        int inputNumber = int.parse(inputText);
-        setState(() {
-          _counter += inputNumber; // Додаємо число до інкременту
-        });
-      } catch (e) {
-        // Якщо текст не можна перетворити на число, просто нічого не робимо
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Введіть число або "Avada Kedavra" для скидання')),
-        );
+      final number = int.tryParse(value);
+      if (number != null) {
+        setState(() => _counter += number);
       }
     }
-
-    // Очищуємо текстове поле після обробки
     _controller.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: const Text('My App')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+          children: [
+            AnimatedBuilder(
+              animation: _colorAnimation,
+              builder: (context, child) {
+                return Text(
+                  '$_counter',
+                  style: TextStyle(fontSize: 80, color: _colorAnimation.value),
+                );
+              },
             ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _controller,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Введіть число або "Avada Kedavra"',
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                controller: _controller,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Enter a number or magic spell',
+                ),
+                textAlign: TextAlign.center,
+                onSubmitted: _onSubmit,
               ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _updateCounter,
-              child: Text('Оновити інкремент'),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _updateCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _animationController.dispose();
+    super.dispose();
   }
 }
