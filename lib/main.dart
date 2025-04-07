@@ -6,23 +6,24 @@ import 'package:lab1/screens/register_page.dart';
 import 'package:lab1/theme.dart';
 
 void main() {
-  runApp(const SmartCurtainsApp());
+  runApp(const MyApp());
 }
 
-class SmartCurtainsApp extends StatelessWidget {
-  const SmartCurtainsApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Smart Curtains',
+      title: 'Lab 3',
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      initialRoute: '/',
+      initialRoute: '/login',
       routes: {
-        '/': (context) => const LoginPage(),
-        '/register': (context) => const RegisterPage(),
-        '/home': (context) => const HomePage(),
-        '/profile': (context) => const ProfilePage(),
+        '/login': (_) => const LoginPage(),
+        '/register': (_) => const RegisterPage(),
+        '/home': (_) => const HomePage(),
+        '/profile': (_) => const ProfilePage(),
       },
     );
   }

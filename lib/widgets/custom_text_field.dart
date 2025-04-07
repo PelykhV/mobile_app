@@ -3,13 +3,19 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatelessWidget {
   final String label;
   final bool isPassword;
+  final TextEditingController? controller;
 
-  // ignore: lines_longer_than_80_chars
-  const CustomTextField({required this.label, super.key, this.isPassword = false});
+  const CustomTextField({
+    required this.label,
+    this.controller,
+    this.isPassword = false,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller,
       obscureText: isPassword,
       decoration: InputDecoration(
         labelText: label,
