@@ -3,7 +3,8 @@ import 'package:lab1/data/user_repository.dart';
 import 'package:lab1/domain/user_service.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final bool isConnected;
+  const LoginPage({required this.isConnected, super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -16,6 +17,12 @@ class _LoginPageState extends State<LoginPage> {
   final UserService _userService = UserService(UserRepository());
 
   Future<void> _login() async {
+    if (!widget.isConnected) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Відсутнє з\'єднання з Інтернетом')),
+      );
+      return;
+    }
     final inputUsername = _usernameController.text.trim();
     final inputPassword = _passwordController.text.trim();
 
